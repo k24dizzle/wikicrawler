@@ -1,4 +1,4 @@
-import requests, sys, webbrowser, bs4, random, operator
+import requests, sys, webbrowser, bs4, random, operator, os
 
 # Randomly selects/returns a valid href given a list of link objects
 def generateLink(links):
@@ -46,8 +46,11 @@ for i in range(int(num)):
 print '---------------Results--------------'
 sorted_storage = sorted(storage.items(), key=operator.itemgetter(1), reverse=True)
 # printing out the results of the trek
+results_file = open('results.txt', 'w')
 for item in sorted_storage:
-    print item[0] + ": " + str(item[1])
+    output = item[0] + ": " + str(item[1])
+    results_file.write(output + '\n')
+    print output
 print "------------------------------------"
 randNum = random.randint(0, len(storage) - 1)
 print("May I suggest reading about: " + sorted_storage[randNum][0])
