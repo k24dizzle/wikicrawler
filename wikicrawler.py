@@ -48,3 +48,6 @@ sorted_storage = sorted(storage.items(), key=operator.itemgetter(1), reverse=Tru
 # printing out the results of the trek
 for item in sorted_storage:
     print item[0] + ": " + str(item[1])
+print "------------------------------------"
+randNum = random.randint(0, len(storage) - 1)
+print("May I suggest reading about: " + sorted_storage[randNum][0])
