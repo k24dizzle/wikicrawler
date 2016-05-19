@@ -43,7 +43,7 @@ for i in range(int(num)):
     print str(i) + " " + temp_2
 
 print '---------------Results--------------'
-sorted_storage = sorted(storage.items(), key=operator.itemgetter(1))
+sorted_storage = sorted(storage.items(), key=operator.itemgetter(1), reverse=True)
 # printing out the results of the trek
 for item in sorted_storage:
     print item[0] + ": " + str(item[1])
