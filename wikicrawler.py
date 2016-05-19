@@ -1,4 +1,4 @@
-import requests, sys, webbrowser, bs4, time, random
+import requests, sys, webbrowser, bs4, random, operator
 
 # Randomly selects/returns a valid href given a list of link objects
 def generateLink(links):
@@ -13,7 +13,7 @@ def generateLink(links):
             check3 = check2 and 'Wikipedia' not in temp.get("href")
             check4 = check3 and 'wikimedia' not in temp.get("href")
             if '/wiki/' in temp.get("href") and check4:
-                searchingForLink = False 
+                searchingForLink = False
     return temp.get("href").split('/')[2]
 
 start = "https://en.wikipedia.org/wiki/"
@@ -26,8 +26,9 @@ res = requests.get(start + temp)
 # uncomment the webbrowser lines if you want to see it in action
 # webbrowser.open(start + temp)
 storage = {}
+
+print ('Crawling... --------------- :|')
 for i in range(int(num)):
-    # time.sleep(0)
     soup = bs4.BeautifulSoup(res.text, "html.parser")
     links = soup.select('a')
     temp = generateLink(links)
@@ -40,6 +41,9 @@ for i in range(int(num)):
     else:
         storage[temp_2] = 1
     print str(i) + " " + temp_2
+
+print '---------------Results--------------'
+sorted_storage = sorted(storage.items(), key=operator.itemgetter(1))
 # printing out the results of the trek
-for key in sorted(storage):
-    print key + ": " + str(storage[key])
+for item in sorted_storage:
+    print item[0] + ": " + str(item[1])
