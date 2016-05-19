@@ -12,7 +12,8 @@ def generateLink(links):
             check2 = check and 'wikipedia' not in temp.get("href")
             check3 = check2 and 'Wikipedia' not in temp.get("href")
             check4 = check3 and 'wikimedia' not in temp.get("href")
-            if '/wiki/' in temp.get("href") and check4:
+            check5 = check4 and 'Main_Page' not in temp.get("href")
+            if '/wiki/' in temp.get("href") and check5:
                 searchingForLink = False
     return temp.get("href").split('/')[2]
 
