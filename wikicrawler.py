@@ -12,32 +12,34 @@ def generateLink(links):
             check2 = check and 'wikipedia' not in temp.get("href")
             check3 = check2 and 'Wikipedia' not in temp.get("href")
             check4 = check3 and 'wikimedia' not in temp.get("href")
-            # duplicate links (links linking to itself)
             if '/wiki/' in temp.get("href") and check4:
                 searchingForLink = False 
     return temp.get("href").split('/')[2]
 
 start = "https://en.wikipedia.org/wiki/"
-print('Type in Something in Wikipedia')
+print('Type in Something in Wikipedia, ex: Klay Thompson')
 temp = raw_input()
-print('How far many links would you like to crawl')
+print('How far would you like to crawl')
 num = raw_input()
 temp.replace(" ", "_")
 res = requests.get(start + temp)
+# uncomment the webbrowser lines if you want to see it in action
 # webbrowser.open(start + temp)
 storage = {}
 for i in range(int(num)):
-    time.sleep(0)
+    # time.sleep(0)
     soup = bs4.BeautifulSoup(res.text, "html.parser")
     links = soup.select('a')
     temp = generateLink(links)
     res = requests.get(start + temp)
     # webbrowser.open(start + temp)
     temp_2 = temp.replace("_", " ")
+    # storing the article name
     if temp_2 in storage:
         storage[temp_2] += 1
     else:
         storage[temp_2] = 1
     print str(i) + " " + temp_2
+# printing out the results of the trek
 for key in sorted(storage):
     print key + ": " + str(storage[key])
