@@ -66,8 +66,8 @@ def playGame():
         print "Which path do you choose? ex. 0, 1, 2, 3, 4, etc..."
         choice = raw_input()
         choice = int(choice)
-        path.append(paths[choice])
-        if paths[choice] == goal:
+        path.append(paths[choice][paths[choice].keys()[0]])
+        if paths[choice][paths[choice].keys()[0]] == goal:
             win = True
         else:
             res = requests.get(start + paths[choice][paths[choice].keys()[0]])
