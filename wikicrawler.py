@@ -26,10 +26,10 @@ def sortLinks(links):
     results = []
     for link in links:
         if linkFilters(link):
-            results.append(link)
+            results.append(link.get("href").split('/')[2])
     return results
 
-def getTenLinksOnPage(links):
+def getTenLinksOnPage(links, goal):
     results = {}
     filteredLinks = sortLinks(links)
     count = 0
@@ -39,7 +39,10 @@ def getTenLinksOnPage(links):
         randNum = random.randint(0, len(filteredLinks) - 1)
         link = filteredLinks[randNum]
         filteredLinks.remove(link)
-        results[count - 1] = {link.get("href").split('/')[2].replace("_", " "): link.get("href").split('/')[2]}
+        results[count - 1] = {link.replace("_", " "): link}
+    if goal in filteredLinks:
+        randNum = random.randint(0, len(results))
+        results[randNum] = {goal: goal}
     return results
 
 def reportKeysAndValues(links):
@@ -52,7 +55,7 @@ def playGame():
     print('Type in a starting point: ex: Klay Thompson')
     temp = raw_input()
     win = False
-    goal = "Case_sensitivity"
+    goal = "Rome"
     temp.replace(" ", "_")
     res = requests.get(start + temp)
     steps = 0
@@ -61,7 +64,7 @@ def playGame():
         steps += 1
         soup = bs4.BeautifulSoup(res.text, "html.parser")
         links = soup.select('a')
-        paths = getTenLinksOnPage(links)
+        paths = getTenLinksOnPage(links, goal)
         reportKeysAndValues(paths)
         print "Which path do you choose? ex. 0, 1, 2, 3, 4, etc..."
         choice = raw_input()
