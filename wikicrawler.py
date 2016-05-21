@@ -51,6 +51,7 @@ def reportKeysAndValues(links):
         # value[value.keys()[0]]
 
 def playGame():
+    print ("Game")
     start = 'https://en.wikipedia.org/wiki/'
     print('Type in a starting point: ex: Klay Thompson')
     temp = raw_input()
@@ -78,6 +79,7 @@ def playGame():
     print path
 
 def crawl():
+    print ("Crawl")
     start = "https://en.wikipedia.org/wiki/"
     print('Type in Something in Wikipedia, ex: Klay Thompson')
     temp = raw_input()
@@ -117,4 +119,12 @@ def crawl():
     randNum = random.randint(0, len(storage) - 1)
     print("May I suggest reading about: " + sorted_storage[randNum][0])
 
-playGame()
+print ('--------****-****----*$_$*______----')
+print ('welcome to k24dizzles wikicrawler')
+print ('would you like to 1) play a game or 2) just crawl')
+print ('-*****^$$*&%*$**************)_______')
+choice = raw_input()
+if choice == '1':
+    playGame()
+else:
+    crawl()
