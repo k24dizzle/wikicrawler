@@ -3,4 +3,6 @@ a simple wikipedia crawler that goes from article to article and printing them o
 
 reports the results after its done crawling
 
+there's also a game
+
 go warriors
