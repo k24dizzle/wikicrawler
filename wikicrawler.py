@@ -58,6 +58,12 @@ def reportKeysAndValues(links):
         print(str(key) + ": " + value.keys()[0] + '\n')
         # value[value.keys()[0]]
 
+def printPathResult(path):
+    if (len(path) > 0):
+        print "START: " + path[0]
+    for i in range(1, len(path)):
+        print str(i) + ': ' + path[i]
+
 # plays a game, trying to get from one article to a goal article
 def playGame():
     print ("Game")
@@ -79,13 +85,16 @@ def playGame():
         print "Which path do you choose? ex. 0, 1, 2, 3, 4, etc..."
         choice = raw_input()
         choice = int(choice)
-        path.append(paths[choice][paths[choice].keys()[0]])
+        path.append(paths[choice].keys()[0])
         if paths[choice][paths[choice].keys()[0]] == goal:
             win = True
         else:
             res = requests.get(start + paths[choice][paths[choice].keys()[0]])
-    print "YOU WON! It took you... " + str(steps) + " paths to get there!"
-    print path
+    if steps == 1:
+        print "YOU WON! It took you... " + str(steps) + " click to get there! DID YOU CHEAT?!?!?!?"
+    else:
+        print "YOU WON! It took you... " + str(steps) + " clicks to get there!"
+    printPathResult(path)
 
 # crawls wiki articles, randomly hopping link to link, prints results at the end
 def crawl():
