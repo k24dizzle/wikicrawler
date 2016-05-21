@@ -1,5 +1,6 @@
 import requests, sys, webbrowser, bs4, random, operator, os
 
+# returning if a link is legit or not (true or false)
 def linkFilters(temp):
     if temp.get("href") != None:
             check = ':' not in temp.get("href")
@@ -22,6 +23,8 @@ def generateLink(links):
             searchingForLink = False
     return temp.get("href").split('/')[2]
 
+# given all the 'a' elements in the html, sorts out all the valid links
+# and plops them in a list which is returned
 def sortLinks(links):
     results = []
     for link in links:
@@ -29,6 +32,10 @@ def sortLinks(links):
             results.append(link.get("href").split('/')[2])
     return results
 
+# given a list of link hrefs, returns a dict of 10 random links
+# connected to a number, if the goal link is present
+# it will randomly replace one of the 10 links with that one
+# so the user can win
 def getTenLinksOnPage(links, goal):
     results = {}
     filteredLinks = sortLinks(links)
@@ -45,11 +52,13 @@ def getTenLinksOnPage(links, goal):
         results[randNum] = {goal: goal}
     return results
 
+# prints out the options
 def reportKeysAndValues(links):
     for key, value in links.items():
         print(str(key) + ": " + value.keys()[0] + '\n')
         # value[value.keys()[0]]
 
+# plays a game, trying to get from one article to a goal article
 def playGame():
     print ("Game")
     start = 'https://en.wikipedia.org/wiki/'
@@ -78,6 +87,7 @@ def playGame():
     print "YOU WON! It took you... " + str(steps) + " paths to get there!"
     print path
 
+# crawls wiki articles, randomly hopping link to link, prints results at the end
 def crawl():
     print ("Crawl")
     start = "https://en.wikipedia.org/wiki/"
@@ -122,7 +132,7 @@ def crawl():
 print ('--------****-****----*$_$*______----')
 print ('welcome to k24dizzles wikicrawler')
 print ('would you like to 1) play a game or 2) just crawl')
-print ('-*****^$$*&%*$**************)_______')
+print ('-*****^-------**************)_______')
 choice = raw_input()
 if choice == '1':
     playGame()
