@@ -1,36 +1,29 @@
 import requests, sys, webbrowser, bs4, random, operator, os
 
 # returning if a link is legit or not (true or false)
-def linkFilters(temp):
-    if temp.get("href") != None:
-            check = ':' not in temp.get("href")
-            check2 = check and 'wikipedia' not in temp.get("href")
-            check3 = check2 and 'Wikipedia' not in temp.get("href")
-            check4 = check3 and 'wikimedia' not in temp.get("href")
-            check5 = check4 and 'Main_Page' not in temp.get("href")
-            check6 = check5 and 'wikisource' not in temp.get("href")
-            if '/wiki/' in temp.get("href") and check6:
-                return True
+def linkFilters(link):
+    hr = link.get('href')
+    if hr is not None:
+        bad = (':', 'wikipedia', 'Wikipedia', 'wikimedia', 'Main_Page', 'wikisource', 'wiktionary')
+        for s in bad:
+            if s in hr:
+                return False
+        if '/wiki/' in hr:
+            return True
     return False
 
 # Randomly selects/returns a valid href given a list of link objects
 def generateLink(links):
-    searchingForLink = True;
-    temp = ""
-    while searchingForLink:
+    while True:
         randNum = random.randint(0, len(links) - 1)
-        temp = links[randNum]
-        if linkFilters(temp):
-            searchingForLink = False
-    return temp.get("href").split('/')[2]
+        link = links[randNum]
+        if linkFilters(link):
+            return link.get("href").split('/')[2]
 
 # given all the 'a' elements in the html, sorts out all the valid links
 # and plops them in a list which is returned
 def sortLinks(links):
-    results = []
-    for link in links:
-        if linkFilters(link):
-            results.append(link.get("href").split('/')[2])
+    results = [link.get('href').split('/')[2] for link in links if linkFilters(link)]
     return results
 
 # given a list of link hrefs, returns a dict of 10 random links
@@ -43,11 +36,11 @@ def getTenLinksOnPage(links, goal):
     count = 0
     paths = min(10, len(filteredLinks))
     while count < paths:
-        count += 1
         randNum = random.randint(0, len(filteredLinks) - 1)
         link = filteredLinks[randNum]
         filteredLinks.remove(link)
-        results[count - 1] = {link.replace("_", " "): link}
+        results[count] = {link.replace("_", " "): link}
+        count += 1
     if goal in filteredLinks:
         randNum = random.randint(0, len(results))
         results[randNum] = {goal.replace("_", " "): goal}
@@ -56,7 +49,7 @@ def getTenLinksOnPage(links, goal):
 # prints out the options
 def reportKeysAndValues(links):
     for key, value in links.items():
-        print(str(key) + ": " + value.keys()[0] + '\n')
+        print(str(key) + ": " + value.keys()[0])
         # value[value.keys()[0]]
 
 def printPathResult(path):
@@ -75,9 +68,8 @@ def getAGoal():
 
 # plays a game, trying to get from one article to a goal article
 def playGame():
-    print ("Game")
     start = 'https://en.wikipedia.org/wiki/'
-    print('Type in a starting point: ex: Klay Thompson')
+    print('Game::::: Type in a starting point: ex: Klay Thompson')
     temp = raw_input()
     win = False
     goal = getAGoal()
@@ -108,9 +100,8 @@ def playGame():
 
 # crawls wiki articles, randomly hopping link to link, prints results at the end
 def crawl():
-    print ("Crawl")
     start = "https://en.wikipedia.org/wiki/"
-    print('Type in Something in Wikipedia, ex: Klay Thompson')
+    print('Crawl::::: Type in Something in Wikipedia, ex: Klay Thompson')
     temp = raw_input()
     print('How far would you like to crawl')
     num = raw_input()
