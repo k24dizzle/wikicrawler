@@ -8,7 +8,8 @@ def linkFilters(temp):
             check3 = check2 and 'Wikipedia' not in temp.get("href")
             check4 = check3 and 'wikimedia' not in temp.get("href")
             check5 = check4 and 'Main_Page' not in temp.get("href")
-            if '/wiki/' in temp.get("href") and check5:
+            check6 = check5 and 'wikisource' not in temp.get("href")
+            if '/wiki/' in temp.get("href") and check6:
                 return True
     return False
 
@@ -64,6 +65,14 @@ def printPathResult(path):
     for i in range(1, len(path)):
         print str(i) + ': ' + path[i]
 
+def getAGoal():
+    goalFile = open('data.txt')
+    content = goalFile.read()
+    goalList = content.split('\n')
+    randNum = random.randint(0, len(goalList) - 1)
+    return goalList[randNum]
+
+
 # plays a game, trying to get from one article to a goal article
 def playGame():
     print ("Game")
@@ -71,7 +80,8 @@ def playGame():
     print('Type in a starting point: ex: Klay Thompson')
     temp = raw_input()
     win = False
-    goal = "Rome"
+    goal = getAGoal()
+    print ('You trying to get to ' + goal + ' GOOD LUCK')
     temp.replace(" ", "_")
     res = requests.get(start + temp)
     steps = 0
