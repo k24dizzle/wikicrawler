@@ -62,8 +62,9 @@ def reportKeysAndValues(links):
 def printPathResult(path):
     if (len(path) > 0):
         print "START: " + path[0]
-    for i in range(1, len(path)):
+    for i in range(1, len(path) - 1):
         print str(i) + ': ' + path[i]
+    print 'FINISH: ' + path[len(path) - 1]
 
 def getAGoal():
     goalFile = open('data.txt')
