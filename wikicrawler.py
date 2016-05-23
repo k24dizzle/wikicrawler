@@ -58,8 +58,13 @@ def printPathResult(path):
     for i in range(1, len(path)):
         print str(i) + ': ' + path[i]
 
-def getAGoal():
-    goalFile = open('data.txt')
+def getAGoal(diff):
+    if diff == '1':
+        goalFile = open('easy.txt')
+    elif diff == '2':
+        goalFile = open('medium.txt')
+    else:
+        goalFile = open('hard.txt')
     content = goalFile.read()
     goalList = content.split('\n')
     randNum = random.randint(0, len(goalList) - 1)
@@ -69,11 +74,13 @@ def getAGoal():
 # plays a game, trying to get from one article to a goal article
 def playGame():
     start = 'https://en.wikipedia.org/wiki/'
+    print 'Choose a difficulty 1) EZ 2) Medium 3) Hard'
+    difficulty = raw_input()
     print('Game::::: Type in a starting point: ex: Klay Thompson :::::')
     print '~~~~~~~~>',
     temp = raw_input()
     win = False
-    goal = getAGoal()
+    goal = getAGoal(difficulty)
     print ('You trying to get to ' + goal.replace("_", " ") + ' GOOD LUCK')
     temp.replace(" ", "_")
     res = requests.get(start + temp)
