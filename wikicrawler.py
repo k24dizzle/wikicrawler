@@ -50,7 +50,7 @@ def getTenLinksOnPage(links, goal):
         results[count - 1] = {link.replace("_", " "): link}
     if goal in filteredLinks:
         randNum = random.randint(0, len(results))
-        results[randNum] = {goal: goal}
+        results[randNum] = {goal.replace("_", " "): goal}
     return results
 
 # prints out the options
@@ -62,9 +62,8 @@ def reportKeysAndValues(links):
 def printPathResult(path):
     if (len(path) > 0):
         print "START: " + path[0]
-    for i in range(1, len(path) - 1):
+    for i in range(1, len(path)):
         print str(i) + ': ' + path[i]
-    print 'FINISH: ' + path[len(path) - 1]
 
 def getAGoal():
     goalFile = open('data.txt')
@@ -82,7 +81,7 @@ def playGame():
     temp = raw_input()
     win = False
     goal = getAGoal()
-    print ('You trying to get to ' + goal + ' GOOD LUCK')
+    print ('You trying to get to ' + goal.replace("_", " ") + ' GOOD LUCK')
     temp.replace(" ", "_")
     res = requests.get(start + temp)
     steps = 0
