@@ -69,7 +69,8 @@ def getAGoal():
 # plays a game, trying to get from one article to a goal article
 def playGame():
     start = 'https://en.wikipedia.org/wiki/'
-    print('Game::::: Type in a starting point: ex: Klay Thompson')
+    print('Game::::: Type in a starting point: ex: Klay Thompson :::::')
+    print '~~~~~~~~>',
     temp = raw_input()
     win = False
     goal = getAGoal()
@@ -101,7 +102,8 @@ def playGame():
 # crawls wiki articles, randomly hopping link to link, prints results at the end
 def crawl():
     start = "https://en.wikipedia.org/wiki/"
-    print('Crawl::::: Type in Something in Wikipedia, ex: Klay Thompson')
+    print('Crawl::::: Type in Something in Wikipedia, ex: Klay Thompson :::::')
+    print '~~~~~~~~>',
     temp = raw_input()
     print('How far would you like to crawl')
     num = raw_input()
@@ -142,7 +144,8 @@ def crawl():
 print ('--------****-****----*$_$*______----')
 print ('welcome to k24dizzles wikicrawler')
 print ('would you like to 1) play a game or 2) just crawl')
-print ('-*****^-------**************)_______')
+print ('------------------------------------')
+print '~~~~~~~~>',
 choice = raw_input()
 if choice == '1':
     playGame()
