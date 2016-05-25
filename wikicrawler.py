@@ -2,8 +2,11 @@
 
 import requests, sys, webbrowser, bs4, random, operator, os
 
+from bs4.element import Tag
+
 defaultPrompt = '... '
-baseUrl = "https://en.wikipedia.org/wiki/"
+baseUrl = "https://en.wikipedia.org"
+wikiUrl = baseUrl + '/wiki/'
 
 # returning if a link is legit or not (true or false)
 def linkFilters(link):
@@ -103,8 +106,7 @@ def playGame():
     print 'Choose a difficulty 1) EZ 2) Medium 3) Hard'
     goal = getAGoal()
     print('Game::::: Type in a starting point: ex: Klay Thompson :::::')
-    print '~~~~~~~~>',
-    startPage = raw_input()
+    startPage = getStrInput()
     win = False
     print ('You trying to get to ' + goal.replace("_", " ") + ' GOOD LUCK')
     startPage.replace(" ", "_")
@@ -130,6 +132,48 @@ def playGame():
     else:
         print "YOU WON! It took you... " + str(steps) + " clicks to get there!"
     printPathResult(path)
+
+class WikiGame(object):
+
+    def __init__(self, goal, startPoint):
+
+        self.goal = goal
+        self.path = [startPoint]
+        self.current = startPoint
+
+    def visitPage(self, page):
+        pass
+
+    def getTen(self):
+        return ...
+
+
+
+class WikiPage(object):
+    def __init__(self, soup):
+        self.soup = soup
+
+    def getTen(self):
+        
+
+    @classmethod
+    def fromPath(cls, path):
+        text = request.get(path).text
+        soup = bs4.BeautifulSoup(text)
+        return cls(soup)
+
+
+class WikiPath(object):
+    def __init__(self, base):
+        if isinstance(base, str):
+            self.name = base
+            self.href = wikiUrl + base.replace(' ', '_')
+        elif isinstance(base, Tag):
+            self.href = baseUrl + base.href
+            self.name = base.href.split('/')[-1].replace('_', ' ')
+
+    def getFullHref(self):
+        return self.href
 
 # crawls wiki articles, randomly hopping link to link, prints results at the end
 def crawl():
