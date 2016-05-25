@@ -1,4 +1,9 @@
+#!/usr/bin/python
+
 import requests, sys, webbrowser, bs4, random, operator, os
+
+defaultPrompt = '... '
+baseUrl = "https://en.wikipedia.org/wiki/"
 
 # returning if a link is legit or not (true or false)
 def linkFilters(link):
@@ -58,34 +63,54 @@ def printPathResult(path):
     for i in range(1, len(path)):
         print str(i) + ': ' + path[i]
 
-def getAGoal(diff):
-    if diff == '1':
-        goalFile = open('easy.txt')
-    elif diff == '2':
-        goalFile = open('medium.txt')
-    else:
-        goalFile = open('hard.txt')
+def getIntInput(minny=0, maxxy=None, prompt=defaultPrompt):
+    while True:
+        user_input = getStrInput(prompt)
+        try:
+            int_val = int(user_input)
+            if (int_val >= minny and int_val <= maxxy):
+                return int_val
+            else:
+                print 'HEY! Need a number between %s and %s' % (minny, maxxy)
+        except ValueError:
+            print "YO! That's not a number"
+
+def getStrInput(prompt=defaultPrompt):
+    while True:
+        user_input = raw_input(prompt)
+        if user_input:
+            return user_input
+        else:
+            print 'what the heck'
+
+difficulties = {
+    1: 'easy.txt',
+    2: 'medium.txt',
+    3: 'hard.txt'
+}
+def getAGoal():
+    diff = getIntInput(1, 3)
+    goalFile = open(difficulties[diff])
     content = goalFile.read()
     goalList = content.split('\n')
+    # filters out all empty strings in goalList (0 = False boolean)
+    goalList = filter(len, goalList)
     randNum = random.randint(0, len(goalList) - 1)
     return goalList[randNum]
 
-
 # plays a game, trying to get from one article to a goal article
 def playGame():
-    start = 'https://en.wikipedia.org/wiki/'
     print 'Choose a difficulty 1) EZ 2) Medium 3) Hard'
-    difficulty = raw_input()
+    goal = getAGoal()
     print('Game::::: Type in a starting point: ex: Klay Thompson :::::')
     print '~~~~~~~~>',
-    temp = raw_input()
+    startPage = raw_input()
     win = False
-    goal = getAGoal(difficulty)
     print ('You trying to get to ' + goal.replace("_", " ") + ' GOOD LUCK')
-    temp.replace(" ", "_")
-    res = requests.get(start + temp)
+    startPage.replace(" ", "_")
+    res = requests.get(baseUrl + startPage)
     steps = 0
-    path = [temp]
+    path = [startPage]
     while not win:
         steps += 1
         soup = bs4.BeautifulSoup(res.text, "html.parser")
@@ -99,7 +124,7 @@ def playGame():
         if paths[choice][paths[choice].keys()[0]] == goal:
             win = True
         else:
-            res = requests.get(start + paths[choice][paths[choice].keys()[0]])
+            res = requests.get(baseUrl + paths[choice][paths[choice].keys()[0]])
     if steps == 1:
         print "YOU WON! It took you... " + str(steps) + " click to get there! DID YOU CHEAT?!?!?!?"
     else:
@@ -108,16 +133,15 @@ def playGame():
 
 # crawls wiki articles, randomly hopping link to link, prints results at the end
 def crawl():
-    start = "https://en.wikipedia.org/wiki/"
     print('Crawl::::: Type in Something in Wikipedia, ex: Klay Thompson :::::')
     print '~~~~~~~~>',
     temp = raw_input()
     print('How far would you like to crawl')
     num = raw_input()
     temp.replace(" ", "_")
-    res = requests.get(start + temp)
+    res = requests.get(baseUrl + temp)
     # uncomment the webbrowser lines if you want to see it in action
-    # webbrowser.open(start + temp)
+    # webbrowser.open(baseUrl + temp)
     storage = {}
 
     print ('Crawling... --------------- :|')
@@ -125,8 +149,8 @@ def crawl():
         soup = bs4.BeautifulSoup(res.text, "html.parser")
         links = soup.select('a')
         temp = generateLink(links)
-        res = requests.get(start + temp)
-        # webbrowser.open(start + temp)
+        res = requests.get(baseUrl + temp)
+        # webbrowser.open(baseUrl + temp)
         temp_2 = temp.replace("_", " ")
         # storing the article name
         if temp_2 in storage:
@@ -152,9 +176,8 @@ print ('--------****-****----*$_$*______----')
 print ('welcome to k24dizzles wikicrawler')
 print ('would you like to 1) play a game or 2) just crawl')
 print ('------------------------------------')
-print '~~~~~~~~>',
-choice = raw_input()
-if choice == '1':
+choice = getIntInput(1, 2)
+if choice == 1:
     playGame()
 else:
     crawl()
