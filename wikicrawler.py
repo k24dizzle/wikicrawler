@@ -26,17 +26,21 @@ def linkFilters(link):
             return True
     return False
 
-# prints out the options
+# prints out the 'path' options
 def reportKeysAndValues(links):
     for i in xrange(len(links)):
         print('%s : %s' %(i, links[i]))
 
+# Given a list of article names, prints them out
+# to the console in formatted style
 def printPathResult(path):
     if (len(path) > 0):
         print "START: " + path[0]
     for i in range(1, len(path)):
         print str(i) + ': ' + path[i]
 
+# Given a min and max, asks the user for an int between this range
+# and returns it
 def getIntInput(minny=0, maxxy=None, prompt=defaultPrompt):
     while True:
         user_input = getStrInput(prompt)
@@ -49,6 +53,7 @@ def getIntInput(minny=0, maxxy=None, prompt=defaultPrompt):
         except ValueError:
             print "YO! That's not a number"
 
+# Asks the user for a string and returns it
 def getStrInput(prompt=defaultPrompt):
     while True:
         user_input = raw_input(prompt)
@@ -57,11 +62,14 @@ def getStrInput(prompt=defaultPrompt):
         else:
             print 'what the heck'
 
+# Can use this to update the difficulty settings
 difficulties = {
     1: 'easy.txt',
     2: 'medium.txt',
     3: 'hard.txt'
 }
+
+# Returns a goal given a user inputted difficulty
 def getAGoal():
     diff = getIntInput(1, 3)
     goalFile = open(difficulties[diff])
@@ -75,12 +83,15 @@ def getAGoal():
 class WikiGame(object):
     # accepts a start wikipage and a goal wikipage
     def __init__(self, start, goal):
-        self.current = start
-        self.path = [start.name]
-        self.goal = goal
-        self.steps = 0
-        self.win = False
+        self.current = start # current page the user is on
+        self.path = [start.name] # path that the user takes
+        self.goal = goal # goal page the user wants to reach
+        self.steps = 0 # counts the user's score
+        self.win = False # have you won yet?
 
+    # given an article name, updates the path, steps, and
+    # winning status, if the article name isn't the goal
+    # will update the current article
     def clickPage(self, name):
         self.path.append(name)
         self.steps += 1
@@ -89,6 +100,9 @@ class WikiGame(object):
         else:
             self.current = WikiPage.fromName(name)
 
+    # gathers 10 random article names on the current page
+    # if the goal article is there will randomly nestle it
+    # within the list
     def gatherTen(self):
         hrefs = self.current.getFilteredHrefs()
         results = []
@@ -109,14 +123,17 @@ class WikiPage(object):
         self.href = href
         self.soup = bs4.BeautifulSoup(requests.get(baseUrl + self.href).text, 'html.parser')
 
+    # returns all the hrefs in the content part of the page
     def getHrefs(self):
         return [link.get('href') for link in self.soup.select('#content a')]
 
+    # returns all the hrefs that match the filters
     def getFilteredHrefs(self):
         return [href.split('/')[2] for href in self.getHrefs() if self.filterHref(href)]
 
     badLinks = (':', 'wikipedia', 'Wikipedia', 'wikimedia', 'Main_Page', 'wikisource', 'wiktionary')
 
+    # returns true if the href fits the given filters
     def filterHref(self, href):
         if href is None:
             return False
@@ -125,10 +142,12 @@ class WikiPage(object):
                 return False
         return '/wiki/' in href
 
+    # creates a WikiPage given a link
     @classmethod
     def fromLink(cls, link):
         return cls(link.get('href'))
 
+    # creates a WikiPage given an article name
     @classmethod
     def fromName(cls, name):
         return cls(name.replace(' ', '_'))
