@@ -156,21 +156,23 @@ class WikiPage(object):
 def playGame():
     print 'Choose a difficulty 1) EZ 2) Medium 3) Hard'
     goal = getAGoal()
-    print('Game::::: Type in a starting point: ex: Klay Thompson :::::')
+    print('::::: Type in a starting point: ex: Klay Thompson :::::')
     startPage = getStrInput()
-    print ('You trying to get to ' + goal.replace("_", " ") + ' GOOD LUCK')
     startWikiPage = WikiPage.fromName(startPage)
     goalWikiPage = WikiPage.fromName(goal)
+    print ('You trying to get to ***- %s -***' %(goalWikiPage.name))
+    print ('Good Luck!')
     game = WikiGame(startWikiPage, goalWikiPage)
 
     while not game.win:
+        print '--------------------'
         paths = game.gatherTen()
         reportKeysAndValues(paths)
         print "Which path do you choose? ex. 0, 1, 2, 3, 4, etc..."
         choice = raw_input()
         choice = int(choice)
         game.clickPage(paths[choice])
-
+    print '------------------'
     if game.steps == 1:
         print "YOU WON! It took you... " + str(game.steps) + " click to get there! DID YOU CHEAT?!?!?!?"
     else:
@@ -179,7 +181,7 @@ def playGame():
 
 # crawls wiki articles, randomly hopping link to link, prints results at the end
 def crawl():
-    print('Crawl::::: Type in Something in Wikipedia, ex: Klay Thompson :::::')
+    print('::::: Type in Something in Wikipedia, ex: Klay Thompson :::::')
     temp = getStrInput()
     print('How far would you like to crawl')
     num = raw_input()
