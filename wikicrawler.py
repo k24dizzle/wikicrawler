@@ -131,8 +131,8 @@ class WikiGame(object):
 class WikiPage(object):
     def __init__(self, href):
         self.name = href.replace('_', ' ')
-        self.href = baseUrl + href
-        self.soup = bs4.BeautifulSoup(requests.get(self.href).text, 'html.parser')
+        self.href = href
+        self.soup = bs4.BeautifulSoup(requests.get(baseUrl + self.href).text, 'html.parser')
 
     def getHrefs(self):
         return [link.get('href') for link in self.soup.select('#content a')]
@@ -186,8 +186,7 @@ def playGame():
 # crawls wiki articles, randomly hopping link to link, prints results at the end
 def crawl():
     print('Crawl::::: Type in Something in Wikipedia, ex: Klay Thompson :::::')
-    print '~~~~~~~~>',
-    temp = raw_input()
+    temp = getStrInput()
     print('How far would you like to crawl')
     num = raw_input()
     temp.replace(" ", "_")
@@ -223,7 +222,7 @@ def crawl():
     print "------------------------------------"
     randNum = random.randint(0, len(storage) - 1)
     print("May I suggest reading about: " + sorted_storage[randNum][0])
-"""
+
 print ('--------****-****----*$_$*______----')
 print ('welcome to k24dizzles wikicrawler')
 print ('would you like to 1) play a game or 2) just crawl')
@@ -233,8 +232,3 @@ if choice == 1:
     playGame()
 else:
     crawl()
-    """
-a = WikiPage('Roman Empire')
-c = WikiPage('Rome')
-b = WikiGame(a, c)
-
