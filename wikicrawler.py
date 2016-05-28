@@ -2,11 +2,8 @@
 
 import requests, sys, webbrowser, bs4, random, operator, os
 
-from bs4.element import Tag
-
 defaultPrompt = '... '
-baseUrl = "https://en.wikipedia.org"
-wikiUrl = baseUrl + '/wiki/'
+baseUrl = "https://en.wikipedia.org/wiki/"
 
 # returning if a link is legit or not (true or false)
 def linkFilters(link):
@@ -56,9 +53,8 @@ def getTenLinksOnPage(links, goal):
 
 # prints out the options
 def reportKeysAndValues(links):
-    for key, value in links.items():
-        print(str(key) + ": " + value.keys()[0])
-        # value[value.keys()[0]]
+    for i in xrange(len(links)):
+        print('%s : %s' %(i, links[i]))
 
 def printPathResult(path):
     if (len(path) > 0):
@@ -101,79 +97,91 @@ def getAGoal():
     randNum = random.randint(0, len(goalList) - 1)
     return goalList[randNum]
 
+class WikiGame(object):
+    # accepts a start wikipage and a goal wikipage
+    def __init__(self, start, goal):
+        self.current = start
+        self.path = [start.name]
+        self.goal = goal
+        self.steps = 0
+        self.win = False
+
+    def clickPage(self, name):
+        self.path.append(name)
+        self.steps += 1
+        if name == self.goal.name:
+            self.win = True
+        else:
+            self.current = WikiPage.fromName(name)
+
+    def gatherTen(self):
+        hrefs = self.current.getFilteredHrefs()
+        results = []
+        paths = min(10, len(hrefs))
+        while len(results) < paths:
+            randNum = random.randint(0, len(hrefs) - 1)
+            temp_href = hrefs[randNum]
+            results.append(temp_href.replace('_', ' '))
+            hrefs.remove(temp_href)
+        if self.goal.href.split('/')[-1] in hrefs:
+            randNum = random.randint(0, len(results) - 1)
+            results[randNum] = self.goal.name
+        return results
+
+class WikiPage(object):
+    def __init__(self, href):
+        self.name = href.replace('_', ' ')
+        self.href = baseUrl + href
+        self.soup = bs4.BeautifulSoup(requests.get(self.href).text, 'html.parser')
+
+    def getHrefs(self):
+        return [link.get('href') for link in self.soup.select('#content a')]
+
+    def getFilteredHrefs(self):
+        return [href.split('/')[2] for href in self.getHrefs() if self.filterHref(href)]
+
+    badLinks = (':', 'wikipedia', 'Wikipedia', 'wikimedia', 'Main_Page', 'wikisource', 'wiktionary')
+
+    def filterHref(self, href):
+        if href is None:
+            return False
+        for check in self.badLinks:
+            if check in href:
+                return False
+        return '/wiki/' in href
+
+    @classmethod
+    def fromLink(cls, link):
+        return cls(link.get('href'))
+
+    @classmethod
+    def fromName(cls, name):
+        return cls(name.replace(' ', '_'))
+
 # plays a game, trying to get from one article to a goal article
 def playGame():
     print 'Choose a difficulty 1) EZ 2) Medium 3) Hard'
     goal = getAGoal()
     print('Game::::: Type in a starting point: ex: Klay Thompson :::::')
     startPage = getStrInput()
-    win = False
     print ('You trying to get to ' + goal.replace("_", " ") + ' GOOD LUCK')
-    startPage.replace(" ", "_")
-    res = requests.get(baseUrl + startPage)
-    steps = 0
-    path = [startPage]
-    while not win:
-        steps += 1
-        soup = bs4.BeautifulSoup(res.text, "html.parser")
-        links = soup.select('a')
-        paths = getTenLinksOnPage(links, goal)
+    startWikiPage = WikiPage.fromName(startPage)
+    goalWikiPage = WikiPage.fromName(goal)
+    game = WikiGame(startWikiPage, goalWikiPage)
+
+    while not game.win:
+        paths = game.gatherTen()
         reportKeysAndValues(paths)
         print "Which path do you choose? ex. 0, 1, 2, 3, 4, etc..."
         choice = raw_input()
         choice = int(choice)
-        path.append(paths[choice].keys()[0])
-        if paths[choice][paths[choice].keys()[0]] == goal:
-            win = True
-        else:
-            res = requests.get(baseUrl + paths[choice][paths[choice].keys()[0]])
-    if steps == 1:
-        print "YOU WON! It took you... " + str(steps) + " click to get there! DID YOU CHEAT?!?!?!?"
+        game.clickPage(paths[choice])
+
+    if game.steps == 1:
+        print "YOU WON! It took you... " + str(game.steps) + " click to get there! DID YOU CHEAT?!?!?!?"
     else:
-        print "YOU WON! It took you... " + str(steps) + " clicks to get there!"
-    printPathResult(path)
-
-class WikiGame(object):
-
-    def __init__(self, goal, startPoint):
-
-        self.goal = goal
-        self.path = [startPoint]
-        self.current = startPoint
-
-    def visitPage(self, page):
-        pass
-
-    def getTen(self):
-        return ...
-
-
-
-class WikiPage(object):
-    def __init__(self, soup):
-        self.soup = soup
-
-    def getTen(self):
-        
-
-    @classmethod
-    def fromPath(cls, path):
-        text = request.get(path).text
-        soup = bs4.BeautifulSoup(text)
-        return cls(soup)
-
-
-class WikiPath(object):
-    def __init__(self, base):
-        if isinstance(base, str):
-            self.name = base
-            self.href = wikiUrl + base.replace(' ', '_')
-        elif isinstance(base, Tag):
-            self.href = baseUrl + base.href
-            self.name = base.href.split('/')[-1].replace('_', ' ')
-
-    def getFullHref(self):
-        return self.href
+        print "YOU WON! It took you... " + str(game.steps) + " clicks to get there!"
+    printPathResult(game.path)
 
 # crawls wiki articles, randomly hopping link to link, prints results at the end
 def crawl():
@@ -215,7 +223,7 @@ def crawl():
     print "------------------------------------"
     randNum = random.randint(0, len(storage) - 1)
     print("May I suggest reading about: " + sorted_storage[randNum][0])
-
+"""
 print ('--------****-****----*$_$*______----')
 print ('welcome to k24dizzles wikicrawler')
 print ('would you like to 1) play a game or 2) just crawl')
@@ -225,3 +233,8 @@ if choice == 1:
     playGame()
 else:
     crawl()
+    """
+a = WikiPage('Roman Empire')
+c = WikiPage('Rome')
+b = WikiGame(a, c)
+
