@@ -5,6 +5,15 @@ import requests, sys, webbrowser, bs4, random, operator, os
 defaultPrompt = '... '
 baseUrl = "https://en.wikipedia.org/wiki/"
 
+# Randomly selects/returns a valid href given a list of link objects
+def generateLink(links):
+    while True:
+        randNum = random.randint(0, len(links) - 1)
+        link = links[randNum]
+        if linkFilters(link):
+            return link.get("href").split('/')[2]
+
+
 # returning if a link is legit or not (true or false)
 def linkFilters(link):
     hr = link.get('href')
@@ -16,40 +25,6 @@ def linkFilters(link):
         if '/wiki/' in hr:
             return True
     return False
-
-# Randomly selects/returns a valid href given a list of link objects
-def generateLink(links):
-    while True:
-        randNum = random.randint(0, len(links) - 1)
-        link = links[randNum]
-        if linkFilters(link):
-            return link.get("href").split('/')[2]
-
-# given all the 'a' elements in the html, sorts out all the valid links
-# and plops them in a list which is returned
-def sortLinks(links):
-    results = [link.get('href').split('/')[2] for link in links if linkFilters(link)]
-    return results
-
-# given a list of link hrefs, returns a dict of 10 random links
-# connected to a number, if the goal link is present
-# it will randomly replace one of the 10 links with that one
-# so the user can win
-def getTenLinksOnPage(links, goal):
-    results = {}
-    filteredLinks = sortLinks(links)
-    count = 0
-    paths = min(10, len(filteredLinks))
-    while count < paths:
-        randNum = random.randint(0, len(filteredLinks) - 1)
-        link = filteredLinks[randNum]
-        filteredLinks.remove(link)
-        results[count] = {link.replace("_", " "): link}
-        count += 1
-    if goal in filteredLinks:
-        randNum = random.randint(0, len(results))
-        results[randNum] = {goal.replace("_", " "): goal}
-    return results
 
 # prints out the options
 def reportKeysAndValues(links):
