@@ -31,14 +31,6 @@ def reportKeysAndValues(links):
     for i in xrange(len(links)):
         print('%s : %s' %(i, links[i]))
 
-# Given a list of article names, prints them out
-# to the console in formatted style
-def printPathResult(path):
-    if (len(path) > 0):
-        print "START: " + path[0]
-    for i in range(1, len(path)):
-        print str(i) + ': ' + path[i]
-
 # Given a min and max, asks the user for an int between this range
 # and returns it
 def getIntInput(minny=0, maxxy=None, prompt=defaultPrompt):
@@ -100,6 +92,14 @@ class WikiGame(object):
         else:
             self.current = WikiPage.fromName(name)
 
+    # Given a list of article names, prints them out
+    # to the console in formatted style
+    def printPathResult(self):
+        if (len(self.path) > 0):
+            print "START: " + self.path[0]
+        for i in range(1, len(self.path)):
+            print str(i) + ': ' + self.path[i]
+
     # gathers 10 random article names on the current page
     # if the goal article is there will randomly nestle it
     # within the list
@@ -115,7 +115,7 @@ class WikiGame(object):
         if self.goal.href.split('/')[-1] in hrefs:
             randNum = random.randint(0, len(results) - 1)
             results[randNum] = self.goal.name
-        return results
+   	return results
 
 class WikiPage(object):
     def __init__(self, href):
@@ -177,7 +177,7 @@ def playGame():
         print "YOU WON! It took you... " + str(game.steps) + " click to get there! DID YOU CHEAT?!?!?!?"
     else:
         print "YOU WON! It took you... " + str(game.steps) + " clicks to get there!"
-    printPathResult(game.path)
+    game.printPathResult()
 
 # crawls wiki articles, randomly hopping link to link, prints results at the end
 def crawl():
