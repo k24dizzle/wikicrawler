@@ -153,8 +153,7 @@ def playGame():
         paths = game.gatherTen()
         reportKeysAndValues(paths)
         print "Which path do you choose? ex. 0, 1, 2, 3, 4, etc..."
-        choice = raw_input()
-        choice = int(choice)
+        choice = getIntInput(0, len(paths) - 1)
         game.clickPage(paths[choice])
     print '------------------'
     if game.steps == 1:
@@ -168,14 +167,15 @@ def crawl():
     print('::::: Type in Something in Wikipedia, ex: Klay Thompson :::::')
     currentPage = WikiPage.fromName(getStrInput())
     print('How far would you like to crawl')
-    num = raw_input()
+    num = getIntInput(1, 24242424)
     res = requests.get(baseUrl + currentPage.href)
     # uncomment the webbrowser lines if you want to see it in action
     # webbrowser.open(baseUrl + temp)
-    storage = {}
-
+    storage = {currentPage.name: 1}
     print ('Crawling... --------------- :|')
-    for i in range(1, int(num) + 1):
+    print 'START: %s' % (currentPage.name)
+
+    for i in range(1, num + 1):
         newHref = currentPage.getRandomHref()
         currentPage = WikiPage(newHref)
         res = requests.get(baseUrl + currentPage.href)
