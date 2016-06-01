@@ -1,30 +1,16 @@
 #!/usr/bin/python
 
-import requests, sys, webbrowser, bs4, random, operator, os
+import requests, webbrowser, bs4, random, operator, os
 
 defaultPrompt = '... '
 baseUrl = "https://en.wikipedia.org/wiki/"
 
-# Randomly selects/returns a valid href given a list of link objects
-def generateLink(links):
-    while True:
-        randNum = random.randint(0, len(links) - 1)
-        link = links[randNum]
-        if linkFilters(link):
-            return link.get("href").split('/')[2]
-
-
-# returning if a link is legit or not (true or false)
-def linkFilters(link):
-    hr = link.get('href')
-    if hr is not None:
-        bad = (':', 'wikipedia', 'Wikipedia', 'wikimedia', 'Main_Page', 'wikisource', 'wiktionary')
-        for s in bad:
-            if s in hr:
-                return False
-        if '/wiki/' in hr:
-            return True
-    return False
+# Can use this to update the difficulty settings
+difficulties = {
+    1: 'easy.txt',
+    2: 'medium.txt',
+    3: 'hard.txt'
+}
 
 # prints out the 'path' options
 def reportKeysAndValues(links):
@@ -53,13 +39,6 @@ def getStrInput(prompt=defaultPrompt):
             return user_input
         else:
             print 'what the heck'
-
-# Can use this to update the difficulty settings
-difficulties = {
-    1: 'easy.txt',
-    2: 'medium.txt',
-    3: 'hard.txt'
-}
 
 # Returns a goal given a user inputted difficulty
 def getAGoal():
@@ -115,7 +94,7 @@ class WikiGame(object):
         if self.goal.href.split('/')[-1] in hrefs:
             randNum = random.randint(0, len(results) - 1)
             results[randNum] = self.goal.name
-   	return results
+        return results
 
 class WikiPage(object):
     def __init__(self, href):
@@ -141,6 +120,11 @@ class WikiPage(object):
             if check in href:
                 return False
         return '/wiki/' in href
+
+    def getRandomHref(self):
+        filteredHrefs = self.getFilteredHrefs()
+        randNum = random.randint(0, len(filteredHrefs) - 1)
+        return filteredHrefs[randNum]
 
     # creates a WikiPage given a link
     @classmethod
@@ -174,37 +158,33 @@ def playGame():
         game.clickPage(paths[choice])
     print '------------------'
     if game.steps == 1:
-        print "YOU WON! It took you... " + str(game.steps) + " click to get there! DID YOU CHEAT?!?!?!?"
+        print "YOU WON! It took you... %s click to get there! DID YOU CHEAT?!?!?!?" % (game.steps)
     else:
-        print "YOU WON! It took you... " + str(game.steps) + " clicks to get there!"
+        print "YOU WON! It took you... %s clicks to get there!" % (game.steps)
     game.printPathResult()
 
 # crawls wiki articles, randomly hopping link to link, prints results at the end
 def crawl():
     print('::::: Type in Something in Wikipedia, ex: Klay Thompson :::::')
-    temp = getStrInput()
+    currentPage = WikiPage.fromName(getStrInput())
     print('How far would you like to crawl')
     num = raw_input()
-    temp.replace(" ", "_")
-    res = requests.get(baseUrl + temp)
+    res = requests.get(baseUrl + currentPage.href)
     # uncomment the webbrowser lines if you want to see it in action
     # webbrowser.open(baseUrl + temp)
     storage = {}
 
     print ('Crawling... --------------- :|')
     for i in range(1, int(num) + 1):
-        soup = bs4.BeautifulSoup(res.text, "html.parser")
-        links = soup.select('a')
-        temp = generateLink(links)
-        res = requests.get(baseUrl + temp)
-        # webbrowser.open(baseUrl + temp)
-        temp_2 = temp.replace("_", " ")
+        newHref = currentPage.getRandomHref()
+        currentPage = WikiPage(newHref)
+        res = requests.get(baseUrl + currentPage.href)
         # storing the article name
-        if temp_2 in storage:
-            storage[temp_2] += 1
+        if currentPage.name in storage:
+            storage[currentPage.name] += 1
         else:
-            storage[temp_2] = 1
-        print str(i) + " " + temp_2
+            storage[currentPage.name] = 1
+        print str(i) + " " + currentPage.name
 
     print '---------------Results--------------'
     sorted_storage = sorted(storage.items(), key=operator.itemgetter(1), reverse=True)
