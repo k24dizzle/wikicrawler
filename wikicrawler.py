@@ -123,7 +123,7 @@ class WikiPage(object):
 
     def getRandomHref(self):
         filteredHrefs = self.getFilteredHrefs()
-        randNum = random.randint(0, len(filteredHrefs) - 1)
+        randNum = random.randint(0, max(len(filteredHrefs) - 1, 1))
         return filteredHrefs[randNum]
 
     # creates a WikiPage given a link
