@@ -42,7 +42,7 @@ def getStrInput(prompt=defaultPrompt):
 
 # Returns a goal given a user inputted difficulty
 def getAGoal():
-    diff = getIntInput(1, 3)
+    diff = getIntInput(1, len(difficulties))
     goalFile = open(difficulties[diff])
     content = goalFile.read()
     goalList = content.split('\n')
