@@ -57,7 +57,6 @@ class WikiGame(object):
         self.current = start # current page the user is on
         self.path = [start.name] # path that the user takes
         self.goal = goal # goal page the user wants to reach
-        self.steps = 0 # counts the user's score
         self.win = False # have you won yet?
 
     # given an article name, updates the path, steps, and
@@ -65,11 +64,14 @@ class WikiGame(object):
     # will update the current article
     def clickPage(self, name):
         self.path.append(name)
-        self.steps += 1
         if name == self.goal.name:
             self.win = True
         else:
             self.current = WikiPage.fromName(name)
+
+    @property
+    def steps(self):
+        return len(self.path) - 1
 
     # Given a list of article names, prints them out
     # to the console in formatted style
